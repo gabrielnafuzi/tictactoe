@@ -22,7 +22,7 @@ export default async function IndexPage() {
         )}
       </p>
 
-      <CreateRoom />
+      {!!user && <CreateRoom />}
 
       {!user && (
         <Link
