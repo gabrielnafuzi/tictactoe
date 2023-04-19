@@ -77,10 +77,11 @@ export const Game = ({
     const channel = clientPusher.subscribe(`room-${gameState.roomId}`)
 
     channel.bind('game-update', (data: RoomGameState) => {
+      const board = data.board as Array<SquareValue | null>
       setCurrentPlayer(data.nextTurn)
-      setSquares(data.board as Array<SquareValue | null>)
+      setSquares(board)
 
-      if (data.winner) {
+      if (data.winner || board.every((square) => square !== null)) {
         startTransition(() => {
           router.refresh()
         })
