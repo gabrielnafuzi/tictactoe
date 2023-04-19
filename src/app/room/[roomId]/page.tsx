@@ -116,13 +116,13 @@ export default async function RoomPage({ params }: RoomPageProps) {
 
       {room.status === 'FINISHED' && (
         <div className="text-center">
-          <p className="mb-4 text-2xl font-bold">
+          <p className="mb-4 text-2xl">
             {!winner && 'It was a draw! 🤝'}
 
             {winner && (
               <>
                 <strong>{winnerName}</strong>{' '}
-                <span className="dark:text-slate-400">
+                <span className="text-slate-600 dark:text-slate-400">
                   won the game!{' '}
                   <span role="img" aria-label="Tada!">
                     🎉

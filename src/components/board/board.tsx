@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
+import { type WinnerData } from '@/app/room/[roomId]/components/game'
 import { boardValues } from '@/constants'
 import { type SquareValue } from '@/types'
 import { calculateWinner } from '@/utils/calculate-winner'
@@ -9,18 +10,14 @@ import { icons } from './constants'
 import { BoardProvider, useBoardContext } from './context'
 import { Square } from './square'
 
-type WinnerData = {
-  winner: SquareValue
-  line: [number, number, number]
-}
-
 type BoardProps = {
   currentPlayer: SquareValue
   squares: Array<SquareValue>
   onBoardChange: (squares: Array<SquareValue>, nextPlayer: SquareValue) => void
   isCurrentUserTurn: boolean
   isWatching: boolean
-  onWin: (winner: SquareValue) => void
+  onWin: (winner: WinnerData) => void
+  winnerData: WinnerData | null
 }
 
 export const Board = ({
@@ -30,9 +27,8 @@ export const Board = ({
   isCurrentUserTurn,
   isWatching,
   onWin,
+  winnerData,
 }: BoardProps) => {
-  const [winnerData, setWinnerData] = useState<WinnerData | null>(null)
-
   const handleClick = (index: number) => {
     if (squares[index] || winnerData) {
       return
@@ -44,9 +40,7 @@ export const Board = ({
     const maybeWinnerData = calculateWinner(newSquares)
 
     if (maybeWinnerData) {
-      setWinnerData(maybeWinnerData)
-
-      onWin(maybeWinnerData.winner)
+      onWin(maybeWinnerData)
     }
 
     const nextPlayer =

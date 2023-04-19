@@ -11,6 +11,11 @@ import { clientPusher } from '@/lib/pusher/client'
 import { type SquareValue } from '@/types'
 import { cn } from '@/utils/cn'
 
+export type WinnerData = {
+  winner: SquareValue
+  line: [number, number, number]
+}
+
 type GameProps = {
   gameState: Omit<RoomGameState, 'createdAt' | 'board'> & {
     board: Array<SquareValue | null>
@@ -31,6 +36,8 @@ export const Game = ({
   const [currentPlayer, setCurrentPlayer] = useState<SquareValue>(
     gameState.nextTurn
   )
+
+  const [winnerData, setWinnerData] = useState<WinnerData | null>(null)
 
   const [squares, setSquares] = useState<Array<SquareValue | null>>(
     gameState.board
@@ -58,8 +65,10 @@ export const Game = ({
     })
   }
 
-  const handleOnWin = (winner: SquareValue) => {
-    if (winner === currentUserBoardValue) {
+  const handleOnWin = (newWinnerData: WinnerData) => {
+    setWinnerData(newWinnerData)
+
+    if (newWinnerData.winner === currentUserBoardValue) {
       setShowConfetti(true)
     }
   }
@@ -105,6 +114,7 @@ export const Game = ({
         isCurrentUserTurn={currentPlayer === currentUserBoardValue}
         isWatching={isWatching}
         onWin={handleOnWin}
+        winnerData={winnerData}
       />
 
       {showConfetti && <ReactConfetti />}
