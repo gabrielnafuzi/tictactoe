@@ -49,7 +49,7 @@ type Action =
     }
 
 type State = {
-  toasts: ToasterToast[]
+  toasts: Array<ToasterToast>
 }
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()

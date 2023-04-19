@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/toast/toaster'
 import '@/styles/globals.css'
 import { cn } from '@/utils/cn'
+import { Footer } from '@/components/footer'
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -24,17 +25,22 @@ export const metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        'min-h-screen bg-background font-sans antialiased',
-        fontSans.variable
-      )}
-    >
+    <html lang="en">
       <head />
-      <body className="min-h-screen">
-        <ThemeProvider attribute="class" defaultTheme="dark">
-          <QueryClientProviderWrapper>{children}</QueryClientProviderWrapper>
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable
+        )}
+      >
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <QueryClientProviderWrapper>
+            <div className="relative flex min-h-screen flex-col">
+              <div className="flex-1">{children}</div>
+
+              <Footer />
+            </div>
+          </QueryClientProviderWrapper>
         </ThemeProvider>
         <Toaster />
       </body>

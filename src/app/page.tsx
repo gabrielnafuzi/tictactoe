@@ -34,7 +34,7 @@ export default async function IndexPage() {
       )}
 
       {/* @ts-expect-error - Server component */}
-      {user && <RoomList />}
+      {user && <RoomList userId={user.id} />}
     </main>
   )
 }

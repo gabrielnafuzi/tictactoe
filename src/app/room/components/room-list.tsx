@@ -1,17 +1,23 @@
+import { type User } from '@prisma/client'
 import Link from 'next/link'
 
 import { buttonVariants } from '@/components/button'
-import { getCurrentUser } from '@/lib/auth'
 import { db } from '@/lib/db'
 
-export async function RoomList() {
-  const user = await getCurrentUser()
-
-  const rooms = await db.room.findMany({
+const getRoomsForUser = (userId: User['id']) => {
+  return db.room.findMany({
     where: {
-      ownerId: user!.id,
+      ownerId: userId,
     },
   })
+}
+
+type RoomListProps = {
+  userId: User['id']
+}
+
+export async function RoomList({ userId }: RoomListProps) {
+  const rooms = await getRoomsForUser(userId)
 
   return (
     <ul className="mt-10 space-y-4">

@@ -1,7 +1,11 @@
-'use client'
 import { useMemo, useState } from 'react'
 
-import { icons, values, type SquareValue } from './constants'
+import { boardValues } from '@/constants'
+import { type SquareValue } from '@/types'
+import { calculateWinner } from '@/utils/calculate-winner'
+import { cn } from '@/utils/cn'
+
+import { icons } from './constants'
 import { BoardProvider, useBoardContext } from './context'
 import { Square } from './square'
 
@@ -10,15 +14,24 @@ type WinnerData = {
   line: [number, number, number]
 }
 
-export const Board = () => {
-  const [currentPlayer, setCurrentPlayer] = useState<SquareValue>(values.X)
+type BoardProps = {
+  currentPlayer: SquareValue
+  squares: Array<SquareValue>
+  onBoardChange: (squares: Array<SquareValue>, nextPlayer: SquareValue) => void
+  isCurrentUserTurn: boolean
+  isWatching: boolean
+  onWin: (winner: SquareValue) => void
+}
 
-  const [winnerData, setWinnerData] = useState<{
-    winner: SquareValue
-    line: [number, number, number]
-  } | null>(null)
-
-  const [squares, setSquares] = useState<SquareValue[]>(Array(9).fill(null))
+export const Board = ({
+  currentPlayer,
+  squares,
+  onBoardChange,
+  isCurrentUserTurn,
+  isWatching,
+  onWin,
+}: BoardProps) => {
+  const [winnerData, setWinnerData] = useState<WinnerData | null>(null)
 
   const handleClick = (index: number) => {
     if (squares[index] || winnerData) {
@@ -28,12 +41,18 @@ export const Board = () => {
     const newSquares = [...squares]
     newSquares[index] = currentPlayer
 
-    setSquares(newSquares)
+    const maybeWinnerData = calculateWinner(newSquares)
 
-    const newWinnerData = calculateWinner(newSquares)
-    setWinnerData(newWinnerData)
+    if (maybeWinnerData) {
+      setWinnerData(maybeWinnerData)
 
-    setCurrentPlayer(currentPlayer === values.X ? values.O : values.X)
+      onWin(maybeWinnerData.winner)
+    }
+
+    const nextPlayer =
+      currentPlayer === boardValues.X ? boardValues.O : boardValues.X
+
+    onBoardChange(newSquares, nextPlayer)
   }
 
   const value = useMemo(() => ({ currentPlayer }), [currentPlayer])
@@ -51,6 +70,9 @@ export const Board = () => {
               onSquareClick={() => handleClick(index)}
               isWinner={winnerData?.line.includes(index)}
               index={index}
+              disabled={
+                !isCurrentUserTurn || isWatching || !!winnerData?.winner
+              }
             />
           ))}
         </div>
@@ -59,42 +81,23 @@ export const Board = () => {
   )
 }
 
-const calculateWinner = (squares: SquareValue[]) => {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ] as const
-
-  for (const [a, b, c] of lines) {
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return {
-        winner: squares[a]!,
-        line: [a, b, c],
-      } satisfies WinnerData
-    }
-  }
-
-  return null
-}
-
 const TurnIndicator = () => {
   const { currentPlayer } = useBoardContext()
 
-  const Icon = icons[currentPlayer]
+  const Icon = icons[currentPlayer as keyof typeof icons]!
 
   return (
-    <div className="flex w-28 items-center justify-center rounded-lg border-none bg-slate-700 p-2 shadow-[0px_4px] shadow-slate-900 transition-colors">
-      <div className="h-4 w-4">
+    <div className="flex w-28 items-center justify-center rounded-lg border-none bg-slate-200 p-2 shadow-[0px_4px] shadow-slate-300 transition-colors dark:bg-slate-700 dark:shadow-slate-800">
+      <div
+        className={cn(
+          'h-4 w-4',
+          currentPlayer === boardValues.X ? 'text-teal-400' : 'text-amber-400'
+        )}
+      >
         <Icon />
       </div>
 
-      <span className="ml-2 text-sm font-bold uppercase text-slate-100">
+      <span className="ml-2 text-sm font-bold uppercase text-slate-900 dark:text-slate-100">
         Turn
       </span>
     </div>

@@ -4,6 +4,14 @@ import {
   type Icon as LucideIcon,
   X,
   Loader2,
+  AlertTriangle,
+  Check,
+  ChevronRight,
+  Circle,
+  SunMedium,
+  Moon,
+  Laptop,
+  User,
 } from 'lucide-react'
 
 export type Icon = LucideIcon
@@ -11,6 +19,14 @@ export type Icon = LucideIcon
 export const Icons = {
   Spinner: Loader2,
   Close: X,
+  Warning: AlertTriangle,
+  Check,
+  ChevronRight,
+  Circle,
+  Sun: SunMedium,
+  Moon,
+  Laptop,
+  User,
   Discord: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

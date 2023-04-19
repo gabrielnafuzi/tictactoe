@@ -22,6 +22,12 @@ enum PlayerMark {
     O
 }
 
+enum RoomStatus {
+    IN_PROGRESS
+    FINISHED
+    LOBBY
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -79,6 +85,7 @@ model Room {
     playerTwo   User?           @relation("users", fields: [playerTwoId], references: [id])
     playerTwoId String?
     gameState   RoomGameState[]
+    status      RoomStatus      @default(LOBBY)
     createdAt   DateTime        @default(now())
     updatedAt   DateTime        @updatedAt
 
