@@ -1,11 +1,11 @@
 import { Inter as FontSans } from 'next/font/google'
 
+import { Footer } from '@/components/footer'
 import { QueryClientProviderWrapper } from '@/components/query-client-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/toast/toaster'
-import '@/styles/globals.css'
 import { cn } from '@/utils/cn'
-import { Footer } from '@/components/footer'
+import '@/styles/globals.css'
 
 const fontSans = FontSans({
   subsets: ['latin'],

@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-import { type SquareValue } from './constants'
+import { type SquareValue } from '@/types'
 
 type BoardContextValues = {
   currentPlayer: SquareValue
