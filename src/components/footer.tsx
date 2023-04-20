@@ -13,7 +13,7 @@ export const Footer = () => {
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
-              Gabriel nafuzi
+              Gabriel Moraes
             </a>
             . The source code is available on{' '}
             <a

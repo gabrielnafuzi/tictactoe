@@ -4,12 +4,12 @@ import { Footer } from '@/components/footer'
 import { QueryClientProviderWrapper } from '@/components/query-client-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/toast/toaster'
-import { cn } from '@/utils/cn'
 import '@/styles/globals.css'
+import { cn } from '@/utils/cn'
 
 const fontSans = FontSans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-sans',
 })
 
 type RootLayoutProps = {
@@ -18,8 +18,8 @@ type RootLayoutProps = {
 
 export const metadata = {
   title: {
-    default: 'Tic tac toe',
-    template: '%s | Tic tac toe',
+    default: 'Tic Tac Toe',
+    template: '%s | Tic Tac Toe',
   },
 }
 

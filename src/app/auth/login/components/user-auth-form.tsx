@@ -14,10 +14,11 @@ type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
 export const UserAuthForm = ({ className, ...props }: UserAuthFormProps) => {
   const [isDiscordLoading, setIsDiscordLoading] = useState(false)
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false)
   const searchParams = useSearchParams()
 
   return (
-    <div className={cn('grid gap-6', className)} {...props}>
+    <div className={cn('grid gap-4', className)} {...props}>
       <Button
         onClick={() => {
           setIsDiscordLoading(true)
@@ -34,7 +35,23 @@ export const UserAuthForm = ({ className, ...props }: UserAuthFormProps) => {
         ) : (
           <Icons.Discord className="mr-2 h-4 w-4" />
         )}{' '}
-        Sign in with Discord
+        Discord
+      </Button>
+
+      <Button
+        onClick={() => {
+          setIsGitHubLoading(true)
+          signIn('github')
+        }}
+        disabled={isGitHubLoading}
+        variant="secondary"
+      >
+        {isGitHubLoading ? (
+          <LoadingSpinner className="mr-2" />
+        ) : (
+          <Icons.GitHub className="mr-2 h-4 w-4" />
+        )}{' '}
+        Github
       </Button>
     </div>
   )
