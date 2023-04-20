@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { withMethods } from '@/lib/api-middleware/with-methods'
 import { getServerAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { CHANNELS, EVENTS } from '@/lib/pusher/constants'
 import { serverPusher } from '@/lib/pusher/server'
 import { calculateWinner } from '@/utils/calculate-winner'
 
@@ -55,7 +56,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { board, nextTurn } = updateRoomSchema.parse(req.body)
 
     try {
-      const { winner } = calculateWinner(board) ?? {}
+      const { winner, line } = calculateWinner(board) ?? {}
 
       const newRoomGameState = await Promise.all([
         db.roomGameState.create({
@@ -63,14 +64,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             board: JSON.stringify(board),
             nextTurn,
             winner,
+            winnerCombination: JSON.stringify(line ?? [null, null, null]),
             roomId,
           },
         }),
 
-        serverPusher.trigger(`room-${roomId}`, 'game-update', {
+        serverPusher.trigger(CHANNELS.roomId(roomId), EVENTS.roomUpdate, {
           board,
           nextTurn,
           winner,
+          winnerCombination: line ?? null,
         }),
       ])
 

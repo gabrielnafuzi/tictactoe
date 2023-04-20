@@ -18,8 +18,8 @@ type RoomPageProps = {
   }
 }
 
-const getRoom = async (roomId: Room['id']) => {
-  const maybeBoom = await db.room.findFirst({
+const getRoom = (roomId: Room['id']) => {
+  return db.room.findFirst({
     where: {
       id: roomId,
     },
@@ -29,17 +29,11 @@ const getRoom = async (roomId: Room['id']) => {
       playerTwo: true,
     },
   })
-
-  if (!maybeBoom) {
-    return null
-  }
-
-  return maybeBoom
 }
 
 export default async function RoomPage({ params }: RoomPageProps) {
-  const roomId = params.roomId as string
   const user = await getCurrentUser()
+  const roomId = params.roomId as string
 
   if (!user) {
     redirect(authOptions.pages?.signIn || '/auth/login')
@@ -87,8 +81,8 @@ export default async function RoomPage({ params }: RoomPageProps) {
           <JoinRoomButton roomId={room.id} userId={user.id} />
         )}
 
-        {room.status === 'LOBBY' && hasPlayerTwo && isOwner && (
-          <StartRoomButton roomId={room.id} />
+        {room.status === 'LOBBY' && isOwner && (
+          <StartRoomButton roomId={room.id} disabled={!hasPlayerTwo} />
         )}
 
         {room.status === 'LOBBY' && hasPlayerTwo && !isOwner && (

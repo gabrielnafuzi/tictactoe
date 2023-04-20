@@ -4,7 +4,8 @@ import { type Room, type User } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/button'
-import { Icons } from '@/components/icons'
+import { LoadingSpinner } from '@/components/loading-spinner'
+import { httpClient } from '@/lib/http-client'
 
 type JoinRoomButtonProps = {
   roomId: Room['id']
@@ -16,18 +17,8 @@ type JoinRoomPayload = {
   roomId: Room['id']
 }
 
-const joinRoom = async ({ roomId, userId }: JoinRoomPayload) => {
-  const res = await fetch(`/api/rooms/${roomId}/join`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      userId,
-    }),
-  })
-
-  return res.json()
+const joinRoom = ({ roomId, userId }: JoinRoomPayload) => {
+  return httpClient.patch(`/api/rooms/${roomId}/join`, { userId })
 }
 
 const useJoinRoomMutation = () => {
@@ -45,9 +36,7 @@ export const JoinRoomButton = ({ roomId, userId }: JoinRoomButtonProps) => {
 
   return (
     <Button onClick={handleJoinRoom} disabled={joinRoomMutation.isLoading}>
-      {joinRoomMutation.isLoading && (
-        <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-      )}
+      {joinRoomMutation.isLoading && <LoadingSpinner className="mr-2" />}
       Join Room as Player 2
     </Button>
   )

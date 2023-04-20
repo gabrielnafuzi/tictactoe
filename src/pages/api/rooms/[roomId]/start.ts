@@ -3,6 +3,7 @@ import { type NextApiRequest, type NextApiResponse } from 'next'
 import { withMethods } from '@/lib/api-middleware/with-methods'
 import { getServerAuthSession } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { CHANNELS, EVENTS } from '@/lib/pusher/constants'
 import { serverPusher } from '@/lib/pusher/server'
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -43,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       })
 
-      serverPusher.trigger(`room-${roomId}`, 'started-room', newRoom)
+      serverPusher.trigger(CHANNELS.roomId(roomId), EVENTS.roomStarted, newRoom)
 
       return res.status(200).json(newRoom)
     } catch (error) {

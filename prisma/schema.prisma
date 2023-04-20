@@ -94,13 +94,14 @@ model Room {
 }
 
 model RoomGameState {
-    id        String      @id @default(cuid())
-    room      Room        @relation(fields: [roomId], references: [id])
-    roomId    String
-    board     Json        @default("[null, null, null, null, null, null, null, null, null]") // Array<'X' | 'O' | null>
-    nextTurn  PlayerMark  @default(X) // Either X or O
-    winner    PlayerMark? // Either X, O, or null
-    createdAt DateTime    @default(now())
+    id                String      @id @default(cuid())
+    room              Room        @relation(fields: [roomId], references: [id])
+    roomId            String
+    board             Json        @default("[null, null, null, null, null, null, null, null, null]") // Array<'X' | 'O' | null>
+    nextTurn          PlayerMark  @default(X) // Either X or O
+    winner            PlayerMark? // Either X, O, or null
+    winnerCombination Json?       @default("[null, null, null]") // Array<0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | null>
+    createdAt         DateTime    @default(now())
 
     @@index([roomId])
 }

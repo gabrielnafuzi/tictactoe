@@ -57,8 +57,8 @@ export const Square = ({
         value === boardValues.X && 'text-teal-400',
         value === boardValues.O && 'text-amber-400',
         isWinner && 'text-slate-200 dark:text-slate-700',
-        isWinner && value === boardValues.X && 'bg-teal-400',
-        isWinner && value === boardValues.O && 'bg-amber-400'
+        isWinner && value === boardValues.X && 'bg-teal-400 dark:bg-teal-400',
+        isWinner && value === boardValues.O && 'bg-amber-400 dark:bg-amber-400'
       )}
       onClick={onSquareClick}
       initial={{ opacity: 0, scale: 0.5 }}

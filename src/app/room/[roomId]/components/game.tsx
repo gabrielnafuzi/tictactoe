@@ -1,13 +1,15 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState } from 'react'
 
 import { type RoomGameState } from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import ReactConfetti from 'react-confetti'
 
 import { Board } from '@/components/board'
+import { httpClient } from '@/lib/http-client'
 import { clientPusher } from '@/lib/pusher/client'
+import { CHANNELS, EVENTS } from '@/lib/pusher/constants'
 import { type SquareValue } from '@/types'
 import { cn } from '@/utils/cn'
 
@@ -31,13 +33,23 @@ export const Game = ({
   isWatching,
 }: GameProps) => {
   const router = useRouter()
-  const [, startTransition] = useTransition()
 
   const [currentPlayer, setCurrentPlayer] = useState<SquareValue>(
     gameState.nextTurn
   )
 
-  const [winnerData, setWinnerData] = useState<WinnerData | null>(null)
+  const [winnerData, setWinnerData] = useState<WinnerData | null>(
+    gameState.winner
+      ? {
+          line: JSON.parse(gameState.winnerCombination as string) as [
+            number,
+            number,
+            number
+          ],
+          winner: gameState.winner,
+        }
+      : null
+  )
 
   const [squares, setSquares] = useState<Array<SquareValue | null>>(
     gameState.board
@@ -52,16 +64,10 @@ export const Game = ({
     setCurrentPlayer(value)
     setSquares(newSquares)
 
-    fetch(`/api/rooms/${gameState.roomId}/update-game-state`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        board: newSquares,
-        nextTurn: value,
-        winner: null,
-      }),
+    httpClient.patch(`/api/rooms/${gameState.roomId}/update-game-state`, {
+      board: newSquares,
+      nextTurn: value,
+      winner: null,
     })
   }
 
@@ -74,18 +80,27 @@ export const Game = ({
   }
 
   useEffect(() => {
-    const channel = clientPusher.subscribe(`room-${gameState.roomId}`)
+    const channel = clientPusher.subscribe(CHANNELS.roomId(gameState.roomId))
 
-    channel.bind('game-update', (data: RoomGameState) => {
-      const board = data.board as Array<SquareValue | null>
-      setCurrentPlayer(data.nextTurn)
-      setSquares(board)
+    channel.bind(EVENTS.pusherSubscriptionSucceeded, () => {
+      channel.bind(EVENTS.roomUpdate, (data: RoomGameState) => {
+        const board = data.board as Array<SquareValue | null>
+        setCurrentPlayer(data.nextTurn)
+        setSquares(board)
 
-      if (data.winner || board.every((square) => square !== null)) {
-        startTransition(() => {
+        if (data.winner || board.every((square) => square !== null)) {
+          setWinnerData(
+            data.winner
+              ? {
+                  winner: data.winner,
+                  line: data.winnerCombination as [number, number, number],
+                }
+              : null
+          )
+
           router.refresh()
-        })
-      }
+        }
+      })
     })
 
     return () => {
@@ -118,7 +133,12 @@ export const Game = ({
         winnerData={winnerData}
       />
 
-      {showConfetti && <ReactConfetti />}
+      {showConfetti && (
+        <ReactConfetti
+          width={globalThis.window?.innerWidth}
+          height={globalThis.window?.innerHeight}
+        />
+      )}
     </section>
   )
 }

@@ -25,7 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head />
       <body
         className={cn(
@@ -41,8 +41,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <Footer />
             </div>
           </QueryClientProviderWrapper>
+
+          <Toaster />
         </ThemeProvider>
-        <Toaster />
       </body>
     </html>
   )

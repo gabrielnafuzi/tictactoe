@@ -4,25 +4,20 @@ import { type Room } from '@prisma/client'
 import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/button'
-import { Icons } from '@/components/icons'
+import { LoadingSpinner } from '@/components/loading-spinner'
+import { httpClient } from '@/lib/http-client'
 
 type StartRoomButtonProps = {
   roomId: Room['id']
+  disabled?: boolean
 }
 
 type JoinRoomPayload = {
   roomId: Room['id']
 }
 
-const startRoom = async ({ roomId }: JoinRoomPayload) => {
-  const res = await fetch(`/api/rooms/${roomId}/start`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-
-  return res.json()
+const startRoom = ({ roomId }: JoinRoomPayload) => {
+  return httpClient.post(`/api/rooms/${roomId}/start`)
 }
 
 const useStartRoomMutation = () => {
@@ -31,7 +26,10 @@ const useStartRoomMutation = () => {
   })
 }
 
-export const StartRoomButton = ({ roomId }: StartRoomButtonProps) => {
+export const StartRoomButton = ({
+  roomId,
+  disabled = false,
+}: StartRoomButtonProps) => {
   const startRoomMutation = useStartRoomMutation()
 
   const handleStartRoom = () => {
@@ -39,10 +37,11 @@ export const StartRoomButton = ({ roomId }: StartRoomButtonProps) => {
   }
 
   return (
-    <Button onClick={handleStartRoom} disabled={startRoomMutation.isLoading}>
-      {startRoomMutation.isLoading && (
-        <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-      )}
+    <Button
+      onClick={handleStartRoom}
+      disabled={startRoomMutation.isLoading || disabled}
+    >
+      {startRoomMutation.isLoading && <LoadingSpinner className="mr-2" />}
       Start Game
     </Button>
   )

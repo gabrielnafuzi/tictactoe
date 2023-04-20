@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation'
 
 import { Button } from '@/components/button'
 import { Icons } from '@/components/icons'
+import { LoadingSpinner } from '@/components/loading-spinner'
 import { cn } from '@/utils/cn'
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
@@ -29,7 +30,7 @@ export const UserAuthForm = ({ className, ...props }: UserAuthFormProps) => {
         variant="secondary"
       >
         {isDiscordLoading ? (
-          <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
+          <LoadingSpinner className="mr-2" />
         ) : (
           <Icons.Discord className="mr-2 h-4 w-4" />
         )}{' '}

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 
 import { Button } from '@/components/button'
-import { Icons } from '@/components/icons'
+import { LoadingSpinner } from '@/components/loading-spinner'
 
 import { useCreateRoom } from '../hooks/use-create-room'
 
@@ -21,10 +21,8 @@ export const CreateRoom = () => {
 
   return (
     <Button onClick={handleCreateRoom} disabled={createRoomMutation.isLoading}>
-      {createRoomMutation.isLoading && (
-        <Icons.Spinner className="mr-2 h-4 w-4 animate-spin" />
-      )}
-      Create Game
+      {createRoomMutation.isLoading && <LoadingSpinner className="mr-2" />}
+      Create room
     </Button>
   )
 }

@@ -10,7 +10,7 @@ export default async function IndexPage() {
   const user = await getCurrentUser()
 
   return (
-    <main className="flex h-screen w-full flex-col items-center justify-center px-4">
+    <main className="flex w-full flex-col items-center justify-center px-4 py-8">
       <h1 className="mb-4 text-4xl font-bold">Tic tac toe</h1>
       <p className="mb-4 text-xl">
         {user ? (
