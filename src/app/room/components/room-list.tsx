@@ -24,6 +24,14 @@ type RoomListProps = {
 export const RoomList = async ({ userId }: RoomListProps) => {
   const rooms = await getRoomsForUser(userId)
 
+  if (rooms.length === 0) {
+    return (
+      <div className="mt-10 flex h-10 w-80 items-center justify-center rounded-md border">
+        <p className="text-sm text-gray-500">No rooms yet. Create one!</p>
+      </div>
+    )
+  }
+
   return (
     <ScrollArea className="mt-10 h-96 w-80 rounded-md border">
       <div className="p-4">
