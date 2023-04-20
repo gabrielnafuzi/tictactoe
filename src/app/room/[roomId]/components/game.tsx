@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { type RoomGameState } from '@prisma/client'
 import { useRouter } from 'next/navigation'
@@ -79,47 +79,46 @@ export const Game = ({
     }
   }
 
+  const handleOnRoomUpdate = useCallback(
+    (data: RoomGameState) => {
+      const board = data.board as Array<SquareValue | null>
+      setCurrentPlayer(data.nextTurn)
+      setSquares(board)
+
+      if (data.winner || board.every((square) => square !== null)) {
+        setWinnerData(
+          data.winner
+            ? {
+                winner: data.winner,
+                line: data.winnerCombination as [number, number, number],
+              }
+            : null
+        )
+
+        if (data.winner === currentUserBoardValue) {
+          setTimeout(() => {
+            router.refresh()
+          }, 3000)
+
+          return
+        }
+
+        router.refresh()
+      }
+    },
+    [currentUserBoardValue, router]
+  )
+
   useEffect(() => {
     const channel = clientPusher.subscribe(CHANNELS.roomId(gameState.roomId))
 
-    channel.bind(EVENTS.pusherSubscriptionSucceeded, () => {
-      channel.bind(EVENTS.roomUpdate, (data: RoomGameState) => {
-        const board = data.board as Array<SquareValue | null>
-        setCurrentPlayer(data.nextTurn)
-        setSquares(board)
-
-        if (data.winner || board.every((square) => square !== null)) {
-          setWinnerData(
-            data.winner
-              ? {
-                  winner: data.winner,
-                  line: data.winnerCombination as [number, number, number],
-                }
-              : null
-          )
-
-          router.refresh()
-        }
-      })
-    })
+    channel.bind(EVENTS.roomUpdate, handleOnRoomUpdate)
 
     return () => {
       channel.unsubscribe()
       channel.unbind_all()
     }
-  }, [gameState.roomId, router])
-
-  useEffect(() => {
-    if (showConfetti) {
-      const timeout = setTimeout(() => {
-        setShowConfetti(false)
-      }, 5000)
-
-      return () => {
-        clearTimeout(timeout)
-      }
-    }
-  }, [showConfetti])
+  }, [gameState.roomId, handleOnRoomUpdate])
 
   return (
     <section className={cn('max-w-lg', isWatching && 'pointer-events-none')}>

@@ -15,7 +15,7 @@ export default async function IndexPage() {
       <p className="mb-4 text-xl">
         {user ? (
           <>
-            Welcome back, <strong>{user.name}</strong>!
+            Hello, <strong>{user.name}</strong>!
           </>
         ) : (
           <>You are not signed in.</>

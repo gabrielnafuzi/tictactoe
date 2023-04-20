@@ -27,16 +27,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     try {
-      const newRoom = await db.room.update({
-        where: { id: roomId },
-        data: {
-          playerTwoId: user.id,
-        },
-      })
+      const [newRoom] = await Promise.all([
+        db.room.update({
+          where: { id: roomId },
+          data: { playerTwoId: user.id },
+        }),
 
-      serverPusher.trigger(CHANNELS.roomId(roomId), EVENTS.secondPlayerJoined, {
-        playerTwo: user,
-      })
+        serverPusher.trigger(
+          CHANNELS.roomId(roomId),
+          EVENTS.secondPlayerJoined,
+          { playerTwo: user }
+        ),
+      ])
 
       return res.status(200).json(newRoom)
     } catch (error) {
