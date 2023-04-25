@@ -1,5 +1,4 @@
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { type GetServerSidePropsContext } from 'next'
 import { getServerSession, type NextAuthOptions, type User } from 'next-auth'
 import DiscordProvider from 'next-auth/providers/discord'
 import GithubProvider from 'next-auth/providers/github'
@@ -88,15 +87,12 @@ export const authOptions: NextAuthOptions = {
  *
  * @see https://next-auth.js.org/configuration/nextjs
  */
-export const getServerAuthSession = (ctx: {
-  req: GetServerSidePropsContext['req']
-  res: GetServerSidePropsContext['res']
-}) => {
-  return getServerSession(ctx.req, ctx.res, authOptions)
+export const getServerAuthSession = () => {
+  return getServerSession(authOptions)
 }
 
 export const getCurrentUser = async () => {
-  const session = await getServerSession(authOptions)
+  const session = await getServerAuthSession()
 
   return session?.user
 }
